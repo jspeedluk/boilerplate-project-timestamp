@@ -4,7 +4,8 @@
 // init project
 var express = require('express');
 var app = express();
-
+//const parseTime = require("./app/parseTime.js");
+const moment  = require('moment');
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
 var cors = require('cors');
@@ -29,4 +30,43 @@ app.get("/api/hello", function (req, res) {
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
   console.log('Your app is listening on port ' + listener.address().port);
+});
+
+//
+/*app.get("/api/timestamp/:date?", function(req, res){
+  
+  var formats  = ['X','YYYY-MM-DD'];
+  const date = moment(req.params.date, formats, true);
+
+   let dateObj;
+
+  if (date.isValid()) {
+    dateObj = {
+      unix: Number(date.format('X')),
+      natural: date.format('MMMM D, YYYY')
+    };
+  } else {
+    dateObj = {
+      unix: null,
+      natural: null
+    };
+  }
+  
+  
+});*/
+function isValidDate(d) {  
+  return (d instanceof Date) ;
+}
+
+app.get('/api/timestamp/:date?',function(req,res) {
+var date =new Date( req.params.date);
+  if(isNaN(date)){
+    var dt = new Date();
+    res.json( {'unix':dt.getTime(),'utc':dt.toUTCString()});
+  }
+  if(isValidDate(date)){
+      res.json({'unix':date.getTime(),'utc':date.toUTCString()}); 
+  }else{
+   res.json({'error':'Invalid Datee'}); 
+  }
 });
